@@ -1,26 +1,16 @@
 FROM openjdk:11 AS BUILD_IMAGE
 
-ARG SKIP_CLONE=false
-
-RUN apt update && apt install maven -y
-
 WORKDIR /app
+COPY . /app
 
-
-RUN if [ "$SKIP_CLONE" = "false" ]; then \
-    git clone https://github.com/nedakhodabakhshi/vprofile-project.git && \
-    cd vprofile-project && \
-    git checkout docker && \
-    mvn install; \
-    fi
+RUN apt update && apt install -y maven \
+    && mvn clean install -DskipTests
 
 FROM tomcat:9-jre11
 
 RUN rm -rf /usr/local/tomcat/webapps/*
-
-
-COPY --from=BUILD_IMAGE /app/vprofile-project/target/vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
+COPY --from=BUILD_IMAGE /app/target/vprofile-v2.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
-
 CMD ["catalina.sh", "run"]
+
