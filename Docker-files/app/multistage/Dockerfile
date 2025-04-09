@@ -2,7 +2,7 @@ FROM openjdk:11 AS BUILD_IMAGE
 
 WORKDIR /app
 
-# تنظیم DNS و نصب پکیج‌ها
+
 RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
     apt-get update && \
     apt-get install -y maven && \
